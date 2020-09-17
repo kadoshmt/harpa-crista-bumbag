@@ -6,6 +6,7 @@ import Dashboard from '../pages/Dashboard';
 import SignIn from '../pages/Signin';
 import SignUp from '../pages/Signup';
 import Profile from '../pages/Profile';
+import Hinos from '../pages/Hinos';
 
 const Routes: React.FC = () => (
   <Switch>
@@ -15,6 +16,8 @@ const Routes: React.FC = () => (
 
     <Route path="/dashboard" component={Dashboard} isPrivate />
     <Route path="/profile" component={Profile} isPrivate />
+
+    <Route path="/hinos" component={Hinos} isPrivate />
   </Switch>
 );
 

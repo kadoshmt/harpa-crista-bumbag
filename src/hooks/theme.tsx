@@ -11,7 +11,8 @@ import {
   DefaultTheme,
 } from 'styled-components';
 
-import { themes, GlobalStyles } from '../styles';
+// import { themes, GlobalStyles } from '../styles';
+import { themes } from '../styles';
 
 // import api from '../services/api';
 
@@ -59,7 +60,7 @@ const ThemeProvider: React.FC = ({ children }) => {
     >
       <StyledThemeProvider theme={theme}>
         {children}
-        <GlobalStyles />
+        {/* <GlobalStyles /> */}
       </StyledThemeProvider>
     </ThemeContext.Provider>
   );

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const Container = styled.footer`
-  min-height: 200px;
+  min-height: 60px;
   padding: 16px;
 
   background: ${props => props.theme.colors.backgroundSecondary};
