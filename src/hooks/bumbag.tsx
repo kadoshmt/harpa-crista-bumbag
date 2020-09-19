@@ -17,9 +17,14 @@ import {
   faSignOutAlt,
   faPen,
   faTrashAlt,
+  faSearch,
 } from '@fortawesome/free-solid-svg-icons';
 
 const theme = {
+  palette: {
+    primary: '#ff9100',
+    secondary: '#ff6000',
+  },
   Icon: {
     iconSets: [
       {
@@ -35,6 +40,7 @@ const theme = {
           faSignOutAlt,
           faPen,
           faTrashAlt,
+          faSearch,
         ],
         prefix: 'solid-',
         type: 'font-awesome' as ParseIconsOpts['type'],

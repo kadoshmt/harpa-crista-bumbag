@@ -13,7 +13,7 @@ const MenuSidebar: React.FC<Props> = ({ menuItem }) => {
   return (
     <Set orientation="vertical">
       <Button
-        palette={menuItem === 'dashboard' ? 'secondary' : 'primary'}
+        palette={menuItem === 'dashboard' ? 'secondary' : 'gray'}
         variant="ghost"
         size="medium"
         iconBefore="solid-home"
@@ -23,7 +23,7 @@ const MenuSidebar: React.FC<Props> = ({ menuItem }) => {
         Dashboard
       </Button>
       <Button
-        palette={menuItem === 'hinos' ? 'secondary' : 'primary'}
+        palette={menuItem === 'hinos' ? 'secondary' : 'gray'}
         variant="ghost"
         size="medium"
         iconBefore="solid-music"
@@ -34,7 +34,7 @@ const MenuSidebar: React.FC<Props> = ({ menuItem }) => {
         Hinos
       </Button>
       <Button
-        palette={menuItem === 'autores' ? 'secondary' : 'primary'}
+        palette={menuItem === 'autores' ? 'secondary' : 'gray'}
         variant="ghost"
         size="medium"
         iconBefore="solid-pen-nib"
@@ -44,12 +44,13 @@ const MenuSidebar: React.FC<Props> = ({ menuItem }) => {
         Autores
       </Button>
       <Button
-        palette={menuItem === 'categorias' ? 'secondary' : 'primary'}
+        palette={menuItem === 'categorias' ? 'secondary' : 'gray'}
         variant="ghost"
         size="medium"
         iconBefore="solid-th-list"
         width="100%"
         justifyContent="left"
+        onClick={() => push('/categorias')}
       >
         Categorias
       </Button>

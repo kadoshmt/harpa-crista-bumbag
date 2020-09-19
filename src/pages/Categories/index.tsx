@@ -30,32 +30,26 @@ interface Hymn {
   authors?: Authors[];
 }
 
-const Hinos: React.FC = () => {
+const Categories: React.FC = () => {
   const { push } = useHistory();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
-  const [hymns, setHymns] = useState([]);
+  const [data, setData] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [pageOptions] = useState({
-    title: 'Hinos',
+    title: 'Categorias',
     subTitle: 'Listar',
     registersPerPage: 30,
-    numberOfPages: Math.ceil(640 / 30),
-    apiUrl: '/admin/hymns',
+    numberOfPages: Math.ceil(10),
+    apiUrl: '/admin/hymns-categories',
   });
 
   useEffect(() => {
     api
-      .get(pageOptions.apiUrl, {
-        params: {
-          page: currentPage,
-          perPage: pageOptions.registersPerPage,
-        },
-        // headers: { Authorization: `"Bearer ${token}"` },
-      })
+      .get(pageOptions.apiUrl)
       .then(response => {
-        setHymns(response.data);
+        setData(response.data);
         setIsLoaded(true);
       })
       .catch(() => {
@@ -81,31 +75,14 @@ const Hinos: React.FC = () => {
         params: parameters,
       })
       .then(response => {
-        setHymns(response.data);
+        setData(response.data);
         setIsLoaded(true);
       });
   }, [currentPage, pageOptions, searchTerm]);
 
-  // const handleErase = useCallback(() => {
-  //   const modal = Modal.useState();
-
-  //   return (
-  //     <>
-  //       <Modal.Disclosure use={Button} {...modal}>
-  //         Open modal
-  //       </Modal.Disclosure>
-  //       <Modal {...modal}>
-  //         <Dialog.Modal type="danger" showActionButtons title="Apagar registro">
-  //           Deseja mesmo apagar este registro
-  //         </Dialog.Modal>
-  //         <Modal.Disclosure use={Button}>Open danger modal</Modal.Disclosure>
-  //       </Modal>
-  //     </>
-  //   );
-  // }, []);
   return (
     <MainLayout
-      menuItem="hinos"
+      menuItem="categorias"
       title={pageOptions.title}
       subtitle={pageOptions.subTitle}
     >
@@ -157,28 +134,22 @@ const Hinos: React.FC = () => {
                 <Table.Row>
                   <Table.HeadCell>ID</Table.HeadCell>
                   <Table.HeadCell textAlign="left">Título</Table.HeadCell>
-                  <Table.HeadCell textAlign="left">Autor</Table.HeadCell>
                   <Table.HeadCell textAlign="center">Ações</Table.HeadCell>
                 </Table.Row>
               </Table.Head>
               <Table.Body>
-                {hymns &&
-                  hymns.map((hymn: Hymn) => (
-                    <Table.Row key={hymn.id}>
-                      <Table.Cell>
-                        {String(hymn.num_hymn).padStart(3, '0')}
-                      </Table.Cell>
-                      <Table.Cell textAlign="left">{hymn.title}</Table.Cell>
-                      <Table.Cell textAlign="left">
-                        {hymn.authors && hymn.authors.length > 0
-                          ? hymn.authors[0].name
-                          : 'Autor Desconhecido'}
-                      </Table.Cell>
+                {data &&
+                  data.map((register: Hymn) => (
+                    <Table.Row key={register.id}>
+                      <Table.Cell>{register.id}</Table.Cell>
+                      <Table.Cell textAlign="left">{register.title}</Table.Cell>
                       <Table.Cell textAlign="center">
                         <Button
                           variant="ghost"
                           iconBefore="solid-pen"
-                          onClick={() => push(`/hinos/editar/${hymn.id}`)}
+                          onClick={() =>
+                            push(`/categorias/editar/${register.id}`)
+                          }
                         >
                           Editar
                         </Button>
@@ -211,4 +182,4 @@ const Hinos: React.FC = () => {
   );
 };
 
-export default Hinos;
+export default Categories;

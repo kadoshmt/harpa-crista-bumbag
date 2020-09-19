@@ -7,20 +7,27 @@ import MenuSidebar from '../../components/MenuSidebar';
 
 interface Props {
   menuItem?: 'dashboard' | 'hinos' | 'autores' | 'categorias' | undefined;
+  title?: string;
+  subtitle?: string;
 }
 
-const MainLayout: React.FC<Props> = ({ menuItem, children }) => {
-  console.log(menuItem);
+const MainLayout: React.FC<Props> = ({
+  menuItem,
+  title,
+  subtitle,
+  children,
+}) => {
   return (
     <Wrapper>
-      <PageWithHeader header={<Header menuItem={menuItem} />} border="default">
+      <PageWithHeader
+        header={
+          <Header menuItem={menuItem} title={title} subtitle={subtitle} />
+        }
+        border="default"
+      >
         <Columns>
           <Columns.Column spread={2}>
-            <Box
-              backgroundColor="whitesmoke"
-              padding="major-2"
-              minHeight="80vh"
-            >
+            <Box padding="major-2" minHeight="80vh">
               <MenuSidebar menuItem={menuItem} />
             </Box>
           </Columns.Column>

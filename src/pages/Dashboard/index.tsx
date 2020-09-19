@@ -1,7 +1,7 @@
 import React from 'react';
 
 // import { Container } from './styles';
-import { Box, Heading, Divider } from 'bumbag';
+import { Box, Heading } from 'bumbag';
 import MainLayout from '../../layouts/MainLayout';
 // import api from '../../services/api';
 

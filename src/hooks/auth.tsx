@@ -1,10 +1,12 @@
 import React, { createContext, useCallback, useState, useContext } from 'react';
+import { useToasts } from 'bumbag';
 import api from '../services/api';
 
 interface User {
   id: string;
   name: string;
   email: string;
+  profile?: 'guest' | 'administrator';
   avatar_url: string;
 }
 
@@ -28,6 +30,7 @@ interface AuthContextData {
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 export const AuthProvider: React.FC = ({ children }) => {
+  const toasts = useToasts();
   const [data, setData] = useState<AuthState>(() => {
     const token = sessionStorage.getItem('@HarpaCristaAdmin:token');
     const user = sessionStorage.getItem('@HarpaCristaAdmin:user');
@@ -40,21 +43,32 @@ export const AuthProvider: React.FC = ({ children }) => {
     return {} as AuthState;
   });
 
-  const signIn = useCallback(async ({ email, password }) => {
-    const response = await api.post('sessions', {
-      email,
-      password,
-    });
+  const signIn = useCallback(
+    async ({ email, password }) => {
+      const response = await api.post('sessions', {
+        email,
+        password,
+      });
 
-    const { token, user } = response.data;
+      const { token, user } = response.data;
 
-    sessionStorage.setItem('@HarpaCristaAdmin:token', token);
-    sessionStorage.setItem('@HarpaCristaAdmin:user', JSON.stringify(user));
+      if (user.profile !== 'administrator') {
+        toasts.danger({
+          accent: 'bottom',
+          title: 'Usuário sem privilégios administrativos.',
+        });
+        throw new Error();
+      }
 
-    api.defaults.headers.authorization = `Bearer ${token}`;
+      sessionStorage.setItem('@HarpaCristaAdmin:token', token);
+      sessionStorage.setItem('@HarpaCristaAdmin:user', JSON.stringify(user));
 
-    setData({ token, user });
-  }, []);
+      api.defaults.headers.authorization = `Bearer ${token}`;
+
+      setData({ token, user });
+    },
+    [toasts],
+  );
 
   const signOut = useCallback(() => {
     sessionStorage.removeItem('@HarpaCristaAdmin:token');
