@@ -8,11 +8,15 @@ import {
   InputField,
   FieldStack,
   useToasts,
+  Image,
+  Heading,
+  Set,
 } from 'bumbag';
 
 import * as Yup from 'yup';
 import { useHistory } from 'react-router-dom';
 import getValidationErrors from '../../utils/getValidationErrors';
+import logoImg from '../../assets/logo.png';
 
 import { useAuth } from '../../hooks/auth';
 
@@ -94,16 +98,25 @@ const SignIn: React.FC = () => {
       alignY="center"
       height="100vh"
       width="100vw"
-      backgroundColor="primaryTint"
+      backgroundColor="grayTint"
     >
       <Card
         alignX="center"
         alignY="center"
-        height="400px"
+        minHeight="400px"
         width="400px"
         backgroundColor="white"
       >
-        <h1>Autenticação</h1>
+        <Box alignX="center" alignY="center" marginBottom="40px">
+          <Image src={logoImg} />
+          <Heading use="h1" color="gray700" fontSize="400" paddingTop="30px">
+            Painel Administrativo
+          </Heading>
+          <Heading use="h2" color="gray400" fontSize="300" paddingTop="6px">
+            Autenticação
+          </Heading>
+        </Box>
+
         <form onSubmit={handleSubmit}>
           <FieldStack spacing="major-2">
             <FieldStack orientation="vertical" spacing="major-2">
@@ -121,6 +134,7 @@ const SignIn: React.FC = () => {
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setEmail(e.target.value);
                 }}
+                autoFocus
               />
 
               <InputField
@@ -142,13 +156,16 @@ const SignIn: React.FC = () => {
               />
             </FieldStack>
 
-            <Button
-              palette="primary"
-              iconBefore="solid-sign-in-alt"
-              type="submit"
-            >
-              Fazer Login
-            </Button>
+            <Set alignX="center">
+              <Button
+                palette="primary"
+                color="default"
+                iconBefore="solid-sign-in-alt"
+                type="submit"
+              >
+                Fazer Login
+              </Button>
+            </Set>
           </FieldStack>
         </form>
       </Card>

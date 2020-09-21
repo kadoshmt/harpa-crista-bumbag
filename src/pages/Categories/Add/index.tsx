@@ -1,34 +1,35 @@
 import React, { useState, useEffect, useCallback, FormEvent } from 'react';
 
 import { Button, FieldStack, InputField, Set, Box, useToasts } from 'bumbag';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import * as Yup from 'yup';
 import getValidationErrors from '../../../utils/getValidationErrors';
-import MainLayout from '../../../layouts/MainLayout';
 import api from '../../../services/api';
+import MainLayout from '../../../layouts/MainLayout';
 import Loading from '../../../components/Loading';
-import { ICategory, IParamTypes, IFormDataError } from '../interfaces';
 
-const CategoriesEdit: React.FC = () => {
+interface FormDataError {
+  title?: string;
+}
+
+const CategoriesAdd: React.FC = () => {
   const { push, goBack } = useHistory();
   const toasts = useToasts();
 
-  const { id } = useParams<IParamTypes>();
-  const [data, setData] = useState<ICategory>();
-  const [errors, setErrors] = useState<IFormDataError>({});
-
+  const [errors, setErrors] = useState<FormDataError>({});
   const [isLoaded, setIsLoaded] = useState(false);
+  const [pageOptions] = useState({
+    title: 'Categorias',
+    subTitle: 'Adicionar',
+    apiUrl: `/admin/hymns-categories`,
+  });
 
   /** INPUTS */
   const [title, setTitle] = useState('');
 
   useEffect(() => {
-    api.get(`/admin/hymns-categories/${id}`).then(response => {
-      setData(response.data);
-    });
-
     setIsLoaded(true);
-  }, [id]);
+  }, []);
 
   const handleSubmit = useCallback(
     async (e: FormEvent) => {
@@ -38,7 +39,7 @@ const CategoriesEdit: React.FC = () => {
         // erase error
         setErrors({});
 
-        const dataToValidate = { title };
+        const data = { title };
 
         // Form Validation settings
         const schema = Yup.object().shape({
@@ -48,20 +49,20 @@ const CategoriesEdit: React.FC = () => {
         });
 
         // validate form
-        await schema.validate(dataToValidate, {
+        await schema.validate(data, {
           abortEarly: false,
         });
 
-        // Save data on API
-        await api.put(`/admin/hymns-categories/${id}`, {
-          title,
+        // Save register on API
+        await api.post(pageOptions.apiUrl, {
+          title: data.title,
         });
 
         // If not have erros, do a success toast and redirect to list page
         toasts.success({
           accent: 'bottom',
           title: 'Sucesso!',
-          message: 'Categoria alterada com sucesso!',
+          message: 'Categoria cadastrada com sucesso!',
         });
         push('/categorias');
       } catch (err) {
@@ -96,11 +97,15 @@ const CategoriesEdit: React.FC = () => {
         });
       }
     },
-    [id, title, toasts, push],
+    [title, toasts, pageOptions.apiUrl, push],
   );
 
   return (
-    <MainLayout menuItem="categorias" title="Categorias" subtitle="Editar">
+    <MainLayout
+      menuItem="categorias"
+      title={pageOptions.title}
+      subtitle={pageOptions.subTitle}
+    >
       {!isLoaded && <Loading />}
       {isLoaded && (
         <>
@@ -109,8 +114,10 @@ const CategoriesEdit: React.FC = () => {
               <FieldStack width="600px" marginTop="major-4">
                 <FieldStack orientation="horizontal">
                   <InputField
+                    type="text"
                     name="title"
                     label="Título"
+                    placeholder="Informe uma categoria..."
                     width="80%"
                     validationText={errors && errors.title ? errors.title : ''}
                     state={errors && errors.title ? 'danger' : undefined}
@@ -139,4 +146,4 @@ const CategoriesEdit: React.FC = () => {
   );
 };
 
-export default CategoriesEdit;
+export default CategoriesAdd;

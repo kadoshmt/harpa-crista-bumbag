@@ -18,6 +18,7 @@ import {
   faPen,
   faTrashAlt,
   faSearch,
+  faPlusCircle,
 } from '@fortawesome/free-solid-svg-icons';
 
 const theme = {
@@ -41,6 +42,7 @@ const theme = {
           faPen,
           faTrashAlt,
           faSearch,
+          faPlusCircle,
         ],
         prefix: 'solid-',
         type: 'font-awesome' as ParseIconsOpts['type'],

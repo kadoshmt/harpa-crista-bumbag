@@ -49,6 +49,7 @@ const Header: React.FC<Props> = ({ menuItem, title = 'Título', subtitle }) => {
           <TopNav.Item>
             <Button
               palette="primary"
+              color="default"
               onClick={signOut}
               iconAfter="solid-sign-out-alt"
             >

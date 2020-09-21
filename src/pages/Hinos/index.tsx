@@ -10,8 +10,6 @@ import {
   Input,
   FieldStack,
   Icon,
-  Modal,
-  Dialog,
 } from 'bumbag';
 import { useHistory } from 'react-router-dom';
 import MainLayout from '../../layouts/MainLayout';
@@ -52,7 +50,6 @@ const Hinos: React.FC = () => {
           page: currentPage,
           perPage: pageOptions.registersPerPage,
         },
-        // headers: { Authorization: `"Bearer ${token}"` },
       })
       .then(response => {
         setHymns(response.data);
@@ -125,12 +122,14 @@ const Hinos: React.FC = () => {
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         setSearchTerm(e.target.value);
                       }}
+                      size="small"
                     />
                     <Button
                       palette="default"
                       onClick={handleSearch}
-                      maxWidth="60px"
+                      maxWidth="40px"
                       alignX="left"
+                      size="small"
                     >
                       <Icon icon="solid-search" />{' '}
                     </Button>
@@ -146,6 +145,7 @@ const Hinos: React.FC = () => {
                     currentPage={currentPage}
                     onChangePage={page => setCurrentPage(page)}
                     numberOfPages={pageOptions.numberOfPages}
+                    selectProps={{ size: 'small' }}
                   />
                 </Box>
               </Columns.Column>
@@ -155,7 +155,7 @@ const Hinos: React.FC = () => {
             <Table hasDividers isHoverable>
               <Table.Head>
                 <Table.Row>
-                  <Table.HeadCell>ID</Table.HeadCell>
+                  <Table.HeadCell>Nº Hino</Table.HeadCell>
                   <Table.HeadCell textAlign="left">Título</Table.HeadCell>
                   <Table.HeadCell textAlign="left">Autor</Table.HeadCell>
                   <Table.HeadCell textAlign="center">Ações</Table.HeadCell>
@@ -165,20 +165,23 @@ const Hinos: React.FC = () => {
                 {hymns &&
                   hymns.map((hymn: Hymn) => (
                     <Table.Row key={hymn.id}>
-                      <Table.Cell>
+                      <Table.Cell paddingY="major-1">
                         {String(hymn.num_hymn).padStart(3, '0')}
                       </Table.Cell>
-                      <Table.Cell textAlign="left">{hymn.title}</Table.Cell>
-                      <Table.Cell textAlign="left">
+                      <Table.Cell textAlign="left" paddingY="major-1">
+                        {hymn.title}
+                      </Table.Cell>
+                      <Table.Cell textAlign="left" paddingY="major-1">
                         {hymn.authors && hymn.authors.length > 0
                           ? hymn.authors[0].name
                           : 'Autor Desconhecido'}
                       </Table.Cell>
-                      <Table.Cell textAlign="center">
+                      <Table.Cell textAlign="center" paddingY="major-1">
                         <Button
                           variant="ghost"
                           iconBefore="solid-pen"
                           onClick={() => push(`/hinos/editar/${hymn.id}`)}
+                          size="small"
                         >
                           Editar
                         </Button>
@@ -186,6 +189,7 @@ const Hinos: React.FC = () => {
                           variant="ghost"
                           iconBefore="solid-trash-alt"
                           palette="danger"
+                          size="small"
                         >
                           Apagar
                         </Button>
@@ -203,6 +207,7 @@ const Hinos: React.FC = () => {
               currentPage={currentPage}
               onChangePage={page => setCurrentPage(page)}
               numberOfPages={pageOptions.numberOfPages}
+              selectProps={{ size: 'small' }}
             />
           </Box>
         </>

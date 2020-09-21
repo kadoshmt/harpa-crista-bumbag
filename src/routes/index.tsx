@@ -11,6 +11,7 @@ import Hinos from '../pages/Hinos';
 import HinosEditar from '../pages/Hinos/Editar';
 
 import Categories from '../pages/Categories';
+import CategoriesAdd from '../pages/Categories/Add';
 import CategoriesEdit from '../pages/Categories/Edit';
 
 const Routes: React.FC = () => (
@@ -26,6 +27,12 @@ const Routes: React.FC = () => (
     <Route path="/hinos/editar/:id" component={HinosEditar} isPrivate />
 
     <Route path="/categorias" component={Categories} isPrivate exact />
+    <Route
+      path="/categorias/adicionar"
+      component={CategoriesAdd}
+      isPrivate
+      exact
+    />
     <Route path="/categorias/editar/:id" component={CategoriesEdit} isPrivate />
   </Switch>
 );

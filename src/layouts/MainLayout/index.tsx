@@ -25,16 +25,18 @@ const MainLayout: React.FC<Props> = ({
         }
         border="default"
       >
-        <Columns>
-          <Columns.Column spread={2}>
-            <Box padding="major-2" minHeight="80vh">
-              <MenuSidebar menuItem={menuItem} />
-            </Box>
-          </Columns.Column>
-          <Columns.Column>
-            <Box padding="major-2">{children}</Box>
-          </Columns.Column>
-        </Columns>
+        <Box width="98vw">
+          <Columns>
+            <Columns.Column spread={2}>
+              <Box padding="major-2" minHeight="80vh">
+                <MenuSidebar menuItem={menuItem} />
+              </Box>
+            </Columns.Column>
+            <Columns.Column>
+              <Box padding="major-2">{children}</Box>
+            </Columns.Column>
+          </Columns>
+        </Box>
         <Footer />
       </PageWithHeader>
     </Wrapper>
