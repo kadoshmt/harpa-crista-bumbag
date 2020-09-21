@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, FormEvent } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 // import { Container } from './styles';
 import {
@@ -13,6 +13,8 @@ import {
   Modal,
   Dialog,
   useToasts,
+  Set,
+  Alert,
 } from 'bumbag';
 import { useHistory } from 'react-router-dom';
 import MainLayout from '../../layouts/MainLayout';
@@ -31,7 +33,6 @@ const Categories: React.FC = () => {
   const [numberOfPages, setNumberOfPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoaded, setIsLoaded] = useState(false);
-  // const [modalVisibility, setModalVisibility] = useState(false);
 
   useEffect(() => {
     api
@@ -75,7 +76,7 @@ const Categories: React.FC = () => {
       });
   }, [currentPage, searchTerm, registersPerPage]);
 
-  const handleDelete = async (e: FormEvent, id: number): Promise<void> => {
+  const handleDelete = async (id: number): Promise<void> => {
     try {
       await api.delete(`/admin/hymns-categories/${id}`);
 
@@ -87,7 +88,6 @@ const Categories: React.FC = () => {
       });
 
       setData(state => state.filter((item: ICategory) => item.id !== id));
-      e.persist();
     } catch (err) {
       toasts.danger({
         accent: 'bottom',
@@ -185,15 +185,6 @@ const Categories: React.FC = () => {
                         >
                           Editar
                         </Button>
-                        {/* <Button
-                          variant="ghost"
-                          iconBefore="solid-trash-alt"
-                          palette="danger"
-                          size="small"
-                          onClick={() => handleDelete(register.id)}
-                        >
-                          Apagar
-                        </Button> */}
                         <Modal.State>
                           <Dialog.Modal baseId={`deleteModal-${register.id}`}>
                             {modalProps => (
@@ -207,32 +198,41 @@ const Categories: React.FC = () => {
                                       palette="danger"
                                       size="small"
                                     >
-                                      Delete
+                                      Apagar
                                     </Button>
-                                    <Box
+                                    <Alert
                                       {...modalProps}
                                       backgroundColor="white"
-                                      border="1px solid black"
                                       padding="major-2"
+                                      title="Excluir categoria"
+                                      type="warning"
+                                      altitude={undefined}
                                     >
-                                      <Box>
-                                        Do you really want to delete this
-                                        record?
-                                      </Box>
-                                      <Button {...modalDisclosureProps}>
-                                        Cancel
-                                      </Button>
-                                      <Button
-                                        {...modalDisclosureProps}
-                                        onClick={async e => {
-                                          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                                          modalDisclosureProps.onClick!(e);
-                                          await handleDelete(e, register.id);
-                                        }}
-                                      >
-                                        Delete
-                                      </Button>
-                                    </Box>
+                                      Tem certeza que deseja excluir a categoria{' '}
+                                      <strong>{register.title}</strong>?
+                                      <Set marginTop="major-2">
+                                        <Button
+                                          {...modalDisclosureProps}
+                                          size="small"
+                                        >
+                                          Cancelar
+                                        </Button>
+                                        <Button
+                                          {...modalDisclosureProps}
+                                          palette="danger"
+                                          color="default"
+                                          size="small"
+                                          onClick={async e => {
+                                            e.persist();
+                                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                            modalDisclosureProps.onClick!(e);
+                                            await handleDelete(register.id);
+                                          }}
+                                        >
+                                          Confirmar
+                                        </Button>
+                                      </Set>
+                                    </Alert>
                                   </>
                                 )}
                               </Modal.Disclosure>
