@@ -9,7 +9,7 @@ import MainLayout from '../../../layouts/MainLayout';
 import Loading from '../../../components/Loading';
 import { IFormDataError } from '../interfaces';
 
-const CategoriesAdd: React.FC = () => {
+const AuthorsAdd: React.FC = () => {
   const { push, goBack } = useHistory();
   const toasts = useToasts();
 
@@ -17,7 +17,8 @@ const CategoriesAdd: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   /** INPUTS */
-  const [title, setTitle] = useState('');
+  const [name, setName] = useState('');
+  const [initials, setInitials] = useState('');
 
   useEffect(() => {
     setIsLoaded(true);
@@ -31,13 +32,16 @@ const CategoriesAdd: React.FC = () => {
         // erase error
         setErrors({});
 
-        const data = { title };
+        const data = { name, initials };
 
         // Form Validation settings
         const schema = Yup.object().shape({
-          title: Yup.string()
-            .min(2, 'O título deve conter no mínimo de 2 caracteres')
-            .max(45, 'O título deve conter no mínimo de 45 caracteres'),
+          name: Yup.string()
+            .min(2, 'O nome deve conter no mínimo de 2 caracteres')
+            .max(45, 'O nome deve conter no mínimo de 45 caracteres'),
+          initials: Yup.string()
+            .min(2, 'As iniciais devem conter no mínimo de 2 caracteres')
+            .max(45, 'As iniciais devem conter no mínimo de 15 caracteres'),
         });
 
         // validate form
@@ -46,17 +50,18 @@ const CategoriesAdd: React.FC = () => {
         });
 
         // Save register on API
-        await api.post(`/admin/hymns-categories`, {
-          title: data.title,
+        await api.post('/admin/hymns-authors', {
+          name,
+          initials,
         });
 
         // If not have erros, do a success toast and redirect to list page
         toasts.success({
           accent: 'bottom',
           title: 'Sucesso!',
-          message: 'Categoria cadastrada com sucesso!',
+          message: 'Autor cadastrado com sucesso!',
         });
-        push('/categorias');
+        push('/autores');
       } catch (err) {
         // Yup Error
         if (err instanceof Yup.ValidationError) {
@@ -68,13 +73,12 @@ const CategoriesAdd: React.FC = () => {
         // Especific errors..
         if (
           err.response &&
-          err.response.data.message === 'Category already exists.'
+          err.response.data.message === 'Author already exists.'
         ) {
           toasts.warning({
             accent: 'bottom',
-            title: 'Categoria já cadastrada.',
-            message:
-              'Já existe uma categoria com este título. Informe outro título.',
+            title: 'Autor já cadastrado.',
+            message: 'Já existe um autor com este nome. Informe outro nome.',
           });
 
           return;
@@ -83,39 +87,52 @@ const CategoriesAdd: React.FC = () => {
         // General errors...
         toasts.danger({
           accent: 'bottom',
-          title: 'Erro ao cadastrar Categoria',
+          title: 'Erro ao cadastrar Autor',
           message:
-            'Ocorreu um erro ao cadastrar a categoria. Verifique os dados informados e tente novamente.',
+            'Ocorreu um erro ao cadastrar este autor. Verifique os dados informados e tente novamente.',
         });
       }
     },
-    [title, toasts, push],
+    [name, initials, toasts, push],
   );
 
   return (
-    <MainLayout menuItem="categorias" title="Categorias" subtitle="Adicionar">
+    <MainLayout menuItem="autores" title="Autores" subtitle="Adicionar">
       {!isLoaded && <Loading />}
       {isLoaded && (
         <>
           <Box>
             <form onSubmit={handleSubmit}>
               <FieldStack width="600px" marginTop="major-4">
-                <FieldStack orientation="horizontal">
-                  <InputField
-                    type="text"
-                    name="title"
-                    label="Título"
-                    placeholder="Informe uma categoria..."
-                    width="80%"
-                    validationText={errors && errors.title ? errors.title : ''}
-                    state={errors && errors.title ? 'danger' : undefined}
-                    value={title}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setTitle(e.target.value);
-                    }}
-                    autoFocus
-                  />
-                </FieldStack>
+                <InputField
+                  type="text"
+                  name="name"
+                  label="Name"
+                  placeholder="Informe o nome do autor..."
+                  width="80%"
+                  validationText={errors && errors.name ? errors.name : ''}
+                  state={errors && errors.name ? 'danger' : undefined}
+                  value={name}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setName(e.target.value);
+                  }}
+                  autoFocus
+                />
+                <InputField
+                  type="text"
+                  name="initials"
+                  label="Iniciais"
+                  placeholder="Informe as iniciais do autor..."
+                  width="40%"
+                  validationText={
+                    errors && errors.initials ? errors.initials : ''
+                  }
+                  state={errors && errors.initials ? 'danger' : undefined}
+                  value={initials}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setInitials(e.target.value);
+                  }}
+                />
 
                 <Set marginTop="major-4">
                   <Button palette="primary" color="default" type="submit">
@@ -134,4 +151,4 @@ const CategoriesAdd: React.FC = () => {
   );
 };
 
-export default CategoriesAdd;
+export default AuthorsAdd;

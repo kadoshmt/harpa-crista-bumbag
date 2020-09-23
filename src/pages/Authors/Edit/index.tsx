@@ -9,7 +9,7 @@ import api from '../../../services/api';
 import Loading from '../../../components/Loading';
 import { IParamTypes, IFormDataError } from '../interfaces';
 
-const CategoriesEdit: React.FC = () => {
+const AuthorsEdit: React.FC = () => {
   const { push, goBack } = useHistory();
   const toasts = useToasts();
 
@@ -18,11 +18,13 @@ const CategoriesEdit: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   /** INPUTS */
-  const [title, setTitle] = useState('');
+  const [name, setName] = useState('');
+  const [initials, setInitials] = useState('');
 
   useEffect(() => {
-    api.get(`/admin/hymns-categories/${id}`).then(response => {
-      setTitle(response.data.title);
+    api.get(`/admin/hymns-authors/${id}`).then(response => {
+      setName(response.data.name);
+      setInitials(response.data.initials);
 
       setIsLoaded(true);
     });
@@ -36,13 +38,16 @@ const CategoriesEdit: React.FC = () => {
         // erase error
         setErrors({});
 
-        const dataToValidate = { title };
+        const dataToValidate = { name, initials };
 
         // Form Validation settings
         const schema = Yup.object().shape({
-          title: Yup.string()
-            .min(2, 'O título deve conter no mínimo de 2 caracteres')
-            .max(45, 'O título deve conter no mínimo de 45 caracteres'),
+          name: Yup.string()
+            .min(2, 'O nome deve conter no mínimo de 2 caracteres')
+            .max(45, 'O nome deve conter no mínimo de 45 caracteres'),
+          initials: Yup.string()
+            .min(2, 'As iniciais devem conter no mínimo de 2 caracteres')
+            .max(45, 'As iniciais devem conter no mínimo de 15 caracteres'),
         });
 
         // validate form
@@ -51,17 +56,18 @@ const CategoriesEdit: React.FC = () => {
         });
 
         // Save data on API
-        await api.put(`/admin/hymns-categories/${id}`, {
-          title,
+        await api.put(`/admin/hymns-authors/${id}`, {
+          name,
+          initials,
         });
 
         // If not have erros, do a success toast and redirect to list page
         toasts.success({
           accent: 'bottom',
           title: 'Sucesso!',
-          message: 'Categoria alterada com sucesso!',
+          message: 'Autor alterao com sucesso!',
         });
-        push('/categorias');
+        push('/autores');
       } catch (err) {
         // Yup Error
         if (err instanceof Yup.ValidationError) {
@@ -73,13 +79,12 @@ const CategoriesEdit: React.FC = () => {
         // Especific errors..
         if (
           err.response &&
-          err.response.data.message === 'Category already exists.'
+          err.response.data.message === 'Author already exists.'
         ) {
           toasts.warning({
             accent: 'bottom',
-            title: 'Categoria já cadastrada.',
-            message:
-              'Já existe uma categoria com este título. Informe outro título.',
+            title: 'Autor já cadastrado.',
+            message: 'Já existe um autor com este nome. Informe outro nome.',
           });
 
           return;
@@ -88,37 +93,52 @@ const CategoriesEdit: React.FC = () => {
         // General errors...
         toasts.danger({
           accent: 'bottom',
-          title: 'Erro ao cadastrar Categoria',
+          title: 'Erro ao cadastrar Autor',
           message:
-            'Ocorreu um erro ao cadastrar a categoria. Verifique os dados informados e tente novamente.',
+            'Ocorreu um erro ao cadastrar este autor. Verifique os dados informados e tente novamente.',
         });
       }
     },
-    [id, title, toasts, push],
+    [id, name, initials, toasts, push],
   );
 
   return (
-    <MainLayout menuItem="categorias" title="Categorias" subtitle="Editar">
+    <MainLayout menuItem="autores" title="Autores" subtitle="Editar">
       {!isLoaded && <Loading />}
       {isLoaded && (
         <>
           <Box>
             <form onSubmit={handleSubmit}>
               <FieldStack width="600px" marginTop="major-4">
-                <FieldStack orientation="horizontal">
-                  <InputField
-                    name="title"
-                    label="Título"
-                    width="80%"
-                    validationText={errors && errors.title ? errors.title : ''}
-                    state={errors && errors.title ? 'danger' : undefined}
-                    value={title}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setTitle(e.target.value);
-                    }}
-                    autoFocus
-                  />
-                </FieldStack>
+                <InputField
+                  type="text"
+                  name="name"
+                  label="Name"
+                  placeholder="Informe o nome do autor..."
+                  width="80%"
+                  validationText={errors && errors.name ? errors.name : ''}
+                  state={errors && errors.name ? 'danger' : undefined}
+                  value={name}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setName(e.target.value);
+                  }}
+                  autoFocus
+                />
+                <InputField
+                  type="text"
+                  name="initials"
+                  label="Iniciais"
+                  placeholder="Informe as iniciais do autor..."
+                  width="40%"
+                  validationText={
+                    errors && errors.initials ? errors.initials : ''
+                  }
+                  state={errors && errors.initials ? 'danger' : undefined}
+                  value={initials}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setInitials(e.target.value);
+                  }}
+                />
 
                 <Set marginTop="major-4">
                   <Button palette="primary" color="default" type="submit">
@@ -137,4 +157,4 @@ const CategoriesEdit: React.FC = () => {
   );
 };
 
-export default CategoriesEdit;
+export default AuthorsEdit;

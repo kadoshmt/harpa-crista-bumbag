@@ -40,6 +40,7 @@ const MenuSidebar: React.FC<Props> = ({ menuItem }) => {
         iconBefore="solid-pen-nib"
         width="100%"
         justifyContent="left"
+        onClick={() => push('/autores')}
       >
         Autores
       </Button>

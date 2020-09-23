@@ -7,7 +7,7 @@ import MainLayout from '../../layouts/MainLayout';
 
 const Dashboard: React.FC = () => {
   return (
-    <MainLayout menuItem="dashboard">
+    <MainLayout menuItem="dashboard" title="Dashboard">
       <Box>
         <Heading use="h3" color="secondary">
           Dashboard

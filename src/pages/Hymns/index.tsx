@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-// import { Container } from './styles';
 import {
   Box,
   Table,
@@ -10,24 +9,18 @@ import {
   Input,
   FieldStack,
   Icon,
-  Modal,
-  Dialog,
-  useToasts,
-  Set,
-  Alert,
 } from 'bumbag';
 import { useHistory } from 'react-router-dom';
 import MainLayout from '../../layouts/MainLayout';
 import api from '../../services/api';
 import Loading from '../../components/Loading';
 
-import { ICategory } from './interfaces';
+import { IHymn } from './interfaces';
 
-const Categories: React.FC = () => {
+const Hymns: React.FC = () => {
   const { push } = useHistory();
-  const toasts = useToasts();
 
-  const [data, setData] = useState<ICategory[]>([]);
+  const [data, setData] = useState<IHymn[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [registersPerPage] = useState(25);
   const [numberOfPages, setNumberOfPages] = useState(1);
@@ -36,11 +29,10 @@ const Categories: React.FC = () => {
 
   useEffect(() => {
     api
-      .get('/admin/hymns-categories', {
+      .get('/admin/hymns', {
         params: {
           page: currentPage,
           perPage: registersPerPage,
-          orderBy: 'id,DESC',
         },
       })
       .then(response => {
@@ -56,7 +48,6 @@ const Categories: React.FC = () => {
     const mainParams = {
       page: currentPage,
       perPage: registersPerPage,
-      orderBy: 'id,DESC',
     };
 
     const params =
@@ -68,57 +59,27 @@ const Categories: React.FC = () => {
         : mainParams;
 
     api
-      .get('/admin/hymns-categories', {
+      .get('/admin/hymns', {
         params,
       })
       .then(response => {
         setData(response.data);
         const count = response.headers['x-total-count'];
+
         setNumberOfPages(Math.ceil(count / registersPerPage));
         setIsLoaded(true);
       });
   }, [currentPage, searchTerm, registersPerPage]);
 
-  const handleDelete = async (id: number): Promise<void> => {
-    try {
-      await api.delete(`/admin/hymns-categories/${id}`);
-
-      // If not have erros, do a success toast and remove the deleted register from state
-      toasts.success({
-        accent: 'bottom',
-        title: 'Sucesso!',
-        message: 'Categoria apagada com sucesso!',
-      });
-
-      setData(state => state.filter((item: ICategory) => item.id !== id));
-    } catch (err) {
-      toasts.danger({
-        accent: 'bottom',
-        title: 'Erro ao apagar categoria',
-        message:
-          'Ocorreu um erro ao tentar apagar a categoria. Tente novamente.',
-      });
-    }
-  };
-
   return (
-    <MainLayout menuItem="categorias" title="Categorias" subtitle="Listar">
+    <MainLayout menuItem="hinos" title="Hinos" subtitle="Listar">
       {!isLoaded && <Loading />}
       {isLoaded && (
         <>
           <Box>
             <Columns marginY="major-2">
               <Columns.Column>
-                <Box padding="major-1">
-                  <Button
-                    palette="primary"
-                    color="default"
-                    iconBefore="solid-plus-circle"
-                    onClick={() => push('/categorias/adicionar')}
-                  >
-                    Adicionar
-                  </Button>
-                </Box>
+                <Box padding="major-1" />
               </Columns.Column>
               <Columns.Column>
                 <Box padding="major-1">
@@ -164,84 +125,46 @@ const Categories: React.FC = () => {
             <Table hasDividers isHoverable>
               <Table.Head>
                 <Table.Row>
-                  <Table.HeadCell>ID</Table.HeadCell>
+                  <Table.HeadCell>ID / Nº Hino</Table.HeadCell>
                   <Table.HeadCell textAlign="left">Título</Table.HeadCell>
+                  <Table.HeadCell textAlign="left">Autores</Table.HeadCell>
+                  <Table.HeadCell textAlign="left">Categorias</Table.HeadCell>
+                  <Table.HeadCell textAlign="center">
+                    Visualizações
+                  </Table.HeadCell>
                   <Table.HeadCell textAlign="center">Ações</Table.HeadCell>
                 </Table.Row>
               </Table.Head>
               <Table.Body>
                 {data &&
-                  data.map((register: ICategory) => (
+                  data.map(register => (
                     <Table.Row key={register.id}>
                       <Table.Cell paddingY="major-1">{register.id}</Table.Cell>
                       <Table.Cell textAlign="left" paddingY="major-1">
                         {register.title}
+                      </Table.Cell>
+                      <Table.Cell textAlign="left" paddingY="major-1">
+                        {register.hymn_authors
+                          ?.map(item => `${item.authors?.name}`)
+                          .join(' | ')}
+                      </Table.Cell>
+                      <Table.Cell textAlign="left" paddingY="major-1">
+                        {register.hymn_categories
+                          ?.map(item => `${item.category?.title}`)
+                          .join(' | ')}
+                      </Table.Cell>
+                      <Table.Cell textAlign="center" paddingY="major-1">
+                        {register.views}
                       </Table.Cell>
                       <Table.Cell textAlign="center" paddingY="major-1">
                         <Button
                           variant="ghost"
                           iconBefore="solid-pen"
                           size="small"
-                          onClick={() =>
-                            push(`/categorias/editar/${register.id}`)
-                          }
+                          onClick={() => push(`/hinos/editar/${register.id}`)}
                         >
                           Editar
                         </Button>
-                        <Modal.State>
-                          <Dialog.Modal baseId={`deleteModal-${register.id}`}>
-                            {modalProps => (
-                              <Modal.Disclosure>
-                                {modalDisclosureProps => (
-                                  <>
-                                    <Button
-                                      {...modalDisclosureProps}
-                                      variant="ghost"
-                                      iconBefore="solid-trash-alt"
-                                      palette="danger"
-                                      size="small"
-                                    >
-                                      Apagar
-                                    </Button>
-                                    <Alert
-                                      {...modalProps}
-                                      backgroundColor="white"
-                                      padding="major-2"
-                                      title="Excluir categoria"
-                                      type="warning"
-                                      altitude={undefined}
-                                    >
-                                      Tem certeza que deseja excluir a categoria{' '}
-                                      <strong>{register.title}</strong>?
-                                      <Set marginTop="major-2">
-                                        <Button
-                                          {...modalDisclosureProps}
-                                          size="small"
-                                        >
-                                          Cancelar
-                                        </Button>
-                                        <Button
-                                          {...modalDisclosureProps}
-                                          palette="danger"
-                                          color="default"
-                                          size="small"
-                                          onClick={async e => {
-                                            e.persist();
-                                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                                            modalDisclosureProps.onClick!(e);
-                                            await handleDelete(register.id);
-                                          }}
-                                        >
-                                          Confirmar
-                                        </Button>
-                                      </Set>
-                                    </Alert>
-                                  </>
-                                )}
-                              </Modal.Disclosure>
-                            )}
-                          </Dialog.Modal>
-                        </Modal.State>
                       </Table.Cell>
                     </Table.Row>
                   ))}
@@ -265,4 +188,4 @@ const Categories: React.FC = () => {
   );
 };
 
-export default Categories;
+export default Hymns;

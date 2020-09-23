@@ -21,13 +21,13 @@ import MainLayout from '../../layouts/MainLayout';
 import api from '../../services/api';
 import Loading from '../../components/Loading';
 
-import { ICategory } from './interfaces';
+import { IAuthors } from './interfaces';
 
-const Categories: React.FC = () => {
+const Authors: React.FC = () => {
   const { push } = useHistory();
   const toasts = useToasts();
 
-  const [data, setData] = useState<ICategory[]>([]);
+  const [data, setData] = useState<IAuthors[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [registersPerPage] = useState(25);
   const [numberOfPages, setNumberOfPages] = useState(1);
@@ -36,7 +36,7 @@ const Categories: React.FC = () => {
 
   useEffect(() => {
     api
-      .get('/admin/hymns-categories', {
+      .get('/admin/hymns-authors', {
         params: {
           page: currentPage,
           perPage: registersPerPage,
@@ -68,12 +68,13 @@ const Categories: React.FC = () => {
         : mainParams;
 
     api
-      .get('/admin/hymns-categories', {
+      .get('/admin/hymns-authors', {
         params,
       })
       .then(response => {
         setData(response.data);
         const count = response.headers['x-total-count'];
+
         setNumberOfPages(Math.ceil(count / registersPerPage));
         setIsLoaded(true);
       });
@@ -81,28 +82,27 @@ const Categories: React.FC = () => {
 
   const handleDelete = async (id: number): Promise<void> => {
     try {
-      await api.delete(`/admin/hymns-categories/${id}`);
+      await api.delete(`/admin/hymns-authors/${id}`);
 
       // If not have erros, do a success toast and remove the deleted register from state
       toasts.success({
         accent: 'bottom',
         title: 'Sucesso!',
-        message: 'Categoria apagada com sucesso!',
+        message: 'Autor apagado com sucesso!',
       });
 
-      setData(state => state.filter((item: ICategory) => item.id !== id));
+      setData(state => state.filter(item => item.id !== id));
     } catch (err) {
       toasts.danger({
         accent: 'bottom',
-        title: 'Erro ao apagar categoria',
-        message:
-          'Ocorreu um erro ao tentar apagar a categoria. Tente novamente.',
+        title: 'Erro ao apagar autor',
+        message: 'Ocorreu um erro ao tentar apagar o autor. Tente novamente.',
       });
     }
   };
 
   return (
-    <MainLayout menuItem="categorias" title="Categorias" subtitle="Listar">
+    <MainLayout menuItem="autores" title="Autores" subtitle="Listar">
       {!isLoaded && <Loading />}
       {isLoaded && (
         <>
@@ -114,7 +114,7 @@ const Categories: React.FC = () => {
                     palette="primary"
                     color="default"
                     iconBefore="solid-plus-circle"
-                    onClick={() => push('/categorias/adicionar')}
+                    onClick={() => push('/autores/adicionar')}
                   >
                     Adicionar
                   </Button>
@@ -165,26 +165,28 @@ const Categories: React.FC = () => {
               <Table.Head>
                 <Table.Row>
                   <Table.HeadCell>ID</Table.HeadCell>
-                  <Table.HeadCell textAlign="left">Título</Table.HeadCell>
+                  <Table.HeadCell textAlign="left">Nome</Table.HeadCell>
+                  <Table.HeadCell textAlign="left">Iniciais</Table.HeadCell>
                   <Table.HeadCell textAlign="center">Ações</Table.HeadCell>
                 </Table.Row>
               </Table.Head>
               <Table.Body>
                 {data &&
-                  data.map((register: ICategory) => (
+                  data.map(register => (
                     <Table.Row key={register.id}>
                       <Table.Cell paddingY="major-1">{register.id}</Table.Cell>
                       <Table.Cell textAlign="left" paddingY="major-1">
-                        {register.title}
+                        {register.name}
+                      </Table.Cell>
+                      <Table.Cell textAlign="left" paddingY="major-1">
+                        {register.initials}
                       </Table.Cell>
                       <Table.Cell textAlign="center" paddingY="major-1">
                         <Button
                           variant="ghost"
                           iconBefore="solid-pen"
                           size="small"
-                          onClick={() =>
-                            push(`/categorias/editar/${register.id}`)
-                          }
+                          onClick={() => push(`/autores/editar/${register.id}`)}
                         >
                           Editar
                         </Button>
@@ -207,12 +209,12 @@ const Categories: React.FC = () => {
                                       {...modalProps}
                                       backgroundColor="white"
                                       padding="major-2"
-                                      title="Excluir categoria"
+                                      title="Excluir autor"
                                       type="warning"
                                       altitude={undefined}
                                     >
-                                      Tem certeza que deseja excluir a categoria{' '}
-                                      <strong>{register.title}</strong>?
+                                      Tem certeza que deseja excluir o autor{' '}
+                                      <strong>{register.name}</strong>?
                                       <Set marginTop="major-2">
                                         <Button
                                           {...modalDisclosureProps}
@@ -265,4 +267,4 @@ const Categories: React.FC = () => {
   );
 };
 
-export default Categories;
+export default Authors;
